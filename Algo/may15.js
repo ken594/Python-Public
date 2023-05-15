@@ -28,33 +28,40 @@ const expected4 = true;
  */
 function socialDistancingEnforcer(queue) {
     if (queue.length < 1) return true;
-    let seen = [];
-    for (let i=0; i < queue.length; i++) {
-        if (queue[i] == 1) {
-            seen.push(i);
+    let seenOne = 0;
+    let distanceCount = 0;
+    for (let i = 0; i < queue.length; i++) {
+        // first time met a person, start to count the distance
+        if (queue[i] == 1 && seenOne == 0) {
+            seenOne = 1;
+            distanceCount = 0;
+        }
+        // see person less than 6, return false
+        else if (queue[i] == 1 && seenOne >= 1 && distanceCount < 6) {
+            return false;
+        }
+        else distanceCount++;
+        // reset the distance counter if distance is greater than 6
+        if (distanceCount == 6) {
+            seenOne--;
+            distanceCount = 0;
         }
     }
-    for (let i = seen.length - 1; i > 1; i--) {
-        if (seen[i] - seen[i-1] < 6) return false;
-    }
     return true;
-    // let res = true;
-    // let mode = 0;
-    // for (let i = 0; i < queue.length; i++) {
-    //     while (queue[i] == 0 && mode == 0) {
-    //         i++;
-    //     }
+    // original solution
+    // let seen = [];
+    // for (let i=0; i < queue.length; i++) {
     //     if (queue[i] == 1) {
-    //         mode = 1;
-    //         let start = i;
-    //         let end = i++;
-    //         while (queue[end] != 1 && end < queue.length) {
-    //             i++;
-    //         }
-            
+    //         seen.push(i);
     //     }
     // }
-    // console.log(seen);
+    // for (let i = seen.length - 1; i > 1; i--) {
+    //     if (seen[i] - seen[i-1] < 6) return false;
+    // }
+    // return true;
+
+    // let res = true;
+    // let mode = 0;
 }
 
 // socialDistancingEnforcer(queue2);
@@ -96,17 +103,20 @@ const expectedC = 5
  * @returns {number} The balance index or -1 if there is none.
  */
 function balanceIndex(nums) {
+    // edge case
     if (nums.length < 3) return -1;
+    // loop through the array to get the sum
     let sum = 0;
     for (let num of nums) {
         sum += num;
     }
-    let left = nums[0];
-    let right = sum-nums[0];
-    for (let i=1; i < nums.length; i++) {
-        right -= nums[i];
-        if (left == right) return i;
-        left += nums[i];
+    let leftSum = nums[0];
+    let rightSum = sum - nums[0];
+    // loop through the array to check the leftSum and rightSum
+    for (let i = 1; i < nums.length - 1; i++) {
+        rightSum -= nums[i];
+        if (leftSum == rightSum) return i;
+        leftSum += nums[i];
     }
     return -1;
 }
